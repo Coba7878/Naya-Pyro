@@ -223,7 +223,7 @@ async def pmpermit_func(client, message, victim):
 flood2 = {}
 
 
-@app.on_callback_query(filters.regex("pmpermit"))
+@app.on_callback_query()
 async def pmpermit_cq(_, cq, victim):
     user_id = cq.from_user.id
     data, victim = (
@@ -277,8 +277,7 @@ async def pmpermit_cq(_, cq, victim):
             "I'm busy right now, will approve you shortly, DO NOT SPAM.",
         )
 
-
-@app.on_inline_query()
+@app.on_inline_query(filters.regex("pmpermit"))
 async def pmpermit_func(answers, user_id, victim):
     if user_id != client.me.id:
         return
