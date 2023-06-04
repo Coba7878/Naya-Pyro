@@ -210,7 +210,7 @@ async def pmpermit(client, message):
     if flood[str(org)] > LIMIT:
         await message.reply_text("SPAM DETECTED, BLOCKED USER AUTOMATICALLY!")
         return await client.block_user(org)
-    x = await client.get_inline_bot_results(app.me.username, f"pmpermit {id(message)}")
+    x = await client.get_inline_bot_results(app.me.username, f"pmpermit {int(org)}")
     await client.send_inline_bot_result(
         org,
         query_id=x.query_id,
@@ -320,15 +320,9 @@ async def inline_query_handler(client, inline_query):
         string = inline_query.query.lower()
         answers = []
         if string.split()[0] == "pmpermit":
-            m = [
-                obj
-                for obj in get_objects()
-                if id(obj) == int(inline_query.query.split(None, 1)[1])
-            ][0]
+            m = [obj for obj in get_objects() if id(obj) == _id][0]
             answers = await pmpermit_func(m, answers)
-            await client.answer_inline_query(
-                inline_query.id, results=answers, cache_time=300
-            )
+            await client.answer_inline_query(inline_query.id, results=answers, cache_time=300)
     except Exception as e:
         e = traceback.format_exc()
         print(e, "InLine")
