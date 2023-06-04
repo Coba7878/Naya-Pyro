@@ -5,6 +5,8 @@
 # © @KynanSupport | Nexa_UB
 # FULL MONGO NIH JING FIX MULTI CLIENT
 from . import *
+from pyrogram.raw.functions.messages import DeleteHistory
+
 
 PM_GUARD_WARNS_DB = {}
 PM_GUARD_MSGS_DB = {}
@@ -24,6 +26,7 @@ Pesan Keamanan Milik {} 👮!**
 
 LIMIT = 5
 
+flood = {}
 
 class LOG_CHATS:
     def __init__(self):
@@ -148,16 +151,22 @@ async def set_limit(client, message):
     await babi.edit(f"**Pesan Limit berhasil diatur menjadi : `{args_txt}`.**")
 
 
+
 @bots.on_message(
-    filters.private & filters.incoming & ~filters.service & ~filters.me & ~filters.bot
+    filters.private
+    & filters.incoming
+    & ~filters.service
+    & ~filters.me
+    & ~filters.bot
+    & ~filters.via_bot
 )
-async def handle_pmpermit(client, message):
-    user_id = client.me.id
-    siapa = message.from_user.id
-    biji = message.from_user.mention
+async def pmpermit_func(client, message):
+    org = message.from_user.id
+    gua = client.me.id
     chat_id = message.chat.id
-    botlog = await get_log_groups(user_id)
-    is_pm_guard_enabled = await get_var(user_id, "ENABLE_PM_GUARD")
+    biji = message.from_user.mention
+    botlog = await get_log_groups(gua)
+    is_pm_guard_enabled = await get_var(gua, "ENABLE_PM_GUARD")
     if message.chat.id != 777000:
         if LOG_CHATS_.RECENT_USER != message.chat.id:
             LOG_CHATS_.RECENT_USER = message.chat.id
@@ -171,7 +180,7 @@ async def handle_pmpermit(client, message):
                 LOG_CHATS_.COUNT = 0
             LOG_CHATS_.NEWPM = await client.send_message(
                 botlog,
-                f"💌 <b><u>MENERUSKAN PESAN BARU</u></b>\n<b> • Dari :</b> {biji}\n<b> • User ID :</b> <code>{siapa}</code>\n",
+                f"💌 <b><u>MENERUSKAN PESAN BARU</u></b>\n<b> • Dari :</b> {biji}\n<b> • User ID :</b> <code>{org}</code>\n",
                 parse_mode=enums.ParseMode.HTML,
             )
         try:
@@ -180,16 +189,7 @@ async def handle_pmpermit(client, message):
             LOG_CHATS_.COUNT += 1
         except BaseException:
             pass
-    if not is_pm_guard_enabled:
-        return
-    in_user = message.from_user
-    is_approved = await check_user_approved(in_user.id)
-    if is_approved:
-        return
-    elif in_user.is_fake or in_user.is_scam:
-        await message.reply("`Sepertinya anda mencurigakan...`")
-        return await client.block_user(in_user.id)
-    elif in_user.is_support or in_user.is_verified or in_user.is_self:
+    if not is_pm_guard_enabled or await check_user_approved(org):
         return
     elif siapa in DEVS:
         try:
@@ -202,48 +202,113 @@ async def handle_pmpermit(client, message):
         except:
             pass
         return
-    master = await client.get_me()
-    getc_pm_txt = await get_var(user_id, "CUSTOM_PM_TEXT")
-    getc_pm_warns = await get_var(user_id, "CUSTOM_PM_WARNS_LIMIT")
-    custom_pm_txt = getc_pm_txt if getc_pm_txt else DEFAULT_TEXT
-    custom_pm_warns = getc_pm_warns if getc_pm_warns else LIMIT
-    if in_user.id in PM_GUARD_WARNS_DB:
-        try:
-            if message.chat.id in PM_GUARD_MSGS_DB:
-                await client.delete_messages(
-                    chat_id=message.chat.id,
-                    message_ids=PM_GUARD_MSGS_DB[message.chat.id],
-                )
-        except:
-            pass
-        PM_GUARD_WARNS_DB[in_user.id] += 1
-        if PM_GUARD_WARNS_DB[in_user.id] >= custom_pm_warns:
-            await message.reply(
-                f"`Saya sudah memberi tahu peringatan {custom_pm_warns}\nTunggu tuan saya menyetujui pesan anda, atau anda akan diblokir !`"
-            )
-            return await client.block_user(in_user.id)
-        else:
-            rplied_msg = await message.reply(
-                PM_WARN.format(
-                    biji,
-                    master.mention,
-                    custom_pm_txt,
-                    PM_GUARD_WARNS_DB[in_user.id],
-                    custom_pm_warns,
-                )
-            )
+    async for m in client.get_chat_history(org, limit=6):
+        if m.reply_markup:
+            await m.delete()
+    if str(org) in flood:
+        flood[str(user_id)] += 1
     else:
-        PM_GUARD_WARNS_DB[in_user.id] = 1
-        rplied_msg = await message.reply(
-            PM_WARN.format(
-                biji,
-                master.mention,
-                custom_pm_txt,
-                PM_GUARD_WARNS_DB[in_user.id],
-                custom_pm_warns,
+        flood[str(user_id)] = 1
+    if flood[str(user_id)] > 5:
+        await message.reply_text("SPAM DETECTED, BLOCKED USER AUTOMATICALLY!")
+        return await client.block_user(org)
+    results = await client.get_inline_bot_results(bot.me.username, f"pmpermit {org}")
+    await client.send_inline_bot_result(
+        org,
+        results.query_id,
+        results.results[0].id,
+    )
+
+flood2 = {}
+
+
+@bot.on_callback_query(filters.regex("pmpermit"))
+async def pmpermit_cq(_, cq):
+    user_id = cq.from_user.id
+    data, victim = (
+        cq.data.split(None, 2)[1],
+        cq.data.split(None, 2)[2],
+    )
+    if data == "approve":
+        if user_id != client.me.id:
+            return await cq.answer("Bukan untuk anda.")
+        await add_approved_user(int(victim))
+        return await app.edit_inline_text(
+            cq.inline_message_id, "Baiklah pengguna ini sudah disetujui."
+        )
+
+    if data == "block":
+        if user_id != client.me.id:
+            return await cq.answer("Bukan untuk anda.")
+        await cq.answer()
+        await app.edit_inline_text(
+            cq.inline_message_id, "Aavv Di Blok."
+        )
+        await bots.block_user(int(victim))
+        return await bots.invoke(
+            DeleteHistory(
+                peer=(await bots.resolve_peer(victim)),
+                max_id=0,
+                revoke=False,
             )
         )
-    PM_GUARD_MSGS_DB[message.chat.id] = [rplied_msg.id]
+
+    if user_id == client.me.id:
+        return await cq.answer("Untuk manusia lain.")
+
+    if data == "to_scam_you":
+        async for m in bots.get_chat_history(user_id, limit=6):
+            if m.reply_markup:
+                await m.delete()
+        await bots.send_message(user_id, "Blocked, Go scam someone else.")
+        await bots.block_user(user_id)
+        await cq.answer()
+
+    elif data == "approve_me":
+        await cq.answer()
+        if str(user_id) in flood2:
+            flood2[str(user_id)] += 1
+        else:
+            flood2[str(user_id)] = 1
+        if flood2[str(user_id)] > 5:
+            await bots.send_message(user_id, "SPAM DETECTED, USER BLOCKED.")
+            return await bots.block_user(user_id)
+        await bots.send_message(
+            user_id,
+            "I'm busy right now, will approve you shortly, DO NOT SPAM.",
+        )
+
+async def pmpermit_func(answers, user_id, victim):
+    if user_id != client.me.id:
+        return
+    caption = f"Hi, I'm {bot.me.first_name}, What are you here for?, You'll be blocked if you send more than 5 messages."
+    buttons = InlineKeyboard(row_width=2)
+    buttons.add(
+        InlineKeyboardButton(
+            text="To Scam You", callback_data="pmpermit to_scam_you a"
+        ),
+        InlineKeyboardButton(
+            text="For promotion",
+            callback_data="pmpermit to_scam_you a",
+        ),
+        InlineKeyboardButton(text="Approve me", callback_data="pmpermit approve_me a"),
+        InlineKeyboardButton(
+            text="Approve", callback_data=f"pmpermit approve {victim}"
+        ),
+        InlineKeyboardButton(
+            text="Block & Delete",
+            callback_data=f"pmpermit block {victim}",
+        ),
+    )
+    answers.append(
+        InlineQueryResultArticle(
+            title="do_not_click_here",
+            reply_markup=buttons,
+            input_message_content=InputTextMessageContent(caption),
+        )
+    )
+    return answers
+
 
 
 __MODULE__ = "antipm"
