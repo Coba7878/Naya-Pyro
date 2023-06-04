@@ -277,7 +277,7 @@ async def pmpermit_cq(_, cq):
             "I'm busy right now, will approve you shortly, DO NOT SPAM.",
         )
 
-
+@app.on_inline_query()
 async def pmpermit_func(answers, user_id, victim):
     if user_id != client.me.id:
         return
@@ -301,6 +301,7 @@ async def pmpermit_func(answers, user_id, victim):
         ),
     )
     answers.append(
+        cache_time=300,
         InlineQueryResultArticle(
             title="do_not_click_here",
             reply_markup=buttons,
