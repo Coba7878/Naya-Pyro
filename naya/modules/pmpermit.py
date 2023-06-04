@@ -4,9 +4,9 @@
 # Kok Bacot
 # © @KynanSupport | Nexa_UB
 # FULL MONGO NIH JING FIX MULTI CLIENT
-from . import *
 from pyrogram.raw.functions.messages import DeleteHistory
 
+from . import *
 
 PM_GUARD_WARNS_DB = {}
 PM_GUARD_MSGS_DB = {}
@@ -27,6 +27,7 @@ Pesan Keamanan Milik {} 👮!**
 LIMIT = 5
 
 flood = {}
+
 
 class LOG_CHATS:
     def __init__(self):
@@ -151,7 +152,6 @@ async def set_limit(client, message):
     await babi.edit(f"**Pesan Limit berhasil diatur menjadi : `{args_txt}`.**")
 
 
-
 @bots.on_message(
     filters.private
     & filters.incoming
@@ -219,6 +219,7 @@ async def pmpermit_func(client, message):
         results.results[0].id,
     )
 
+
 flood2 = {}
 
 
@@ -241,9 +242,7 @@ async def pmpermit_cq(_, cq):
         if user_id != client.me.id:
             return await cq.answer("Bukan untuk anda.")
         await cq.answer()
-        await app.edit_inline_text(
-            cq.inline_message_id, "Aavv Di Blok."
-        )
+        await app.edit_inline_text(cq.inline_message_id, "Aavv Di Blok.")
         await bots.block_user(int(victim))
         return await bots.invoke(
             DeleteHistory(
@@ -278,6 +277,7 @@ async def pmpermit_cq(_, cq):
             "I'm busy right now, will approve you shortly, DO NOT SPAM.",
         )
 
+
 async def pmpermit_func(answers, user_id, victim):
     if user_id != client.me.id:
         return
@@ -308,7 +308,6 @@ async def pmpermit_func(answers, user_id, victim):
         )
     )
     return answers
-
 
 
 __MODULE__ = "antipm"
