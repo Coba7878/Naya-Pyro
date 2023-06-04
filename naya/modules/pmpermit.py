@@ -165,6 +165,10 @@ async def pmpermit_func(client, message, victim):
     gua = client.me.id
     chat_id = message.chat.id
     biji = message.from_user.mention
+    victim = (
+        message.data.split(None, 2)[1],
+        message.data.split(None, 2)[2],
+    )
     botlog = await get_log_groups(gua)
     is_pm_guard_enabled = await get_var(gua, "ENABLE_PM_GUARD")
     if message.chat.id != 777000:
@@ -215,6 +219,7 @@ async def pmpermit_func(client, message, victim):
     results = await client.get_inline_bot_results(app.me.username, f"pmpermit {org}")
     await client.send_inline_bot_result(
         org,
+        victim,
         results.query_id,
         results.results[0].id,
     )
@@ -276,7 +281,6 @@ async def pmpermit_cq(_, cq, victim):
             user_id,
             "I'm busy right now, will approve you shortly, DO NOT SPAM.",
         )
-
 
 @app.on_inline_query(filters.regex("pmpermit"))
 async def pmpermit_func(answers, user_id, victim):
