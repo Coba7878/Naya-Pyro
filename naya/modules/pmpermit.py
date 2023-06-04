@@ -210,7 +210,7 @@ async def pmpermit(client, message):
     if flood[str(org)] > LIMIT:
         await message.reply_text("SPAM DETECTED, BLOCKED USER AUTOMATICALLY!")
         return await client.block_user(org)
-    x = await client.get_inline_bot_results(app.me.username, f"pmpermit")
+    x = await client.get_inline_bot_results(app.me.username, f"pmpermit {id(message)}")
     await client.send_inline_bot_result(
         org,
         query_id=x.query_id,
