@@ -4,11 +4,9 @@
 # Kok Bacot
 # © @KynanSupport | Nexa_UB
 # FULL MONGO NIH JING FIX MULTI CLIENT
+from pyrogram.raw.functions.messages import DeleteHistory
 import traceback
 from gc import get_objects
-
-from pyrogram.raw.functions.messages import DeleteHistory
-
 from . import *
 
 PM_GUARD_WARNS_DB = {}
@@ -220,7 +218,6 @@ async def pmpermit(client, message):
 
 flood2 = {}
 
-
 @app.on_callback_query()
 async def pmpermit_cq(_, cq):
     user_id = cq.from_user.id
@@ -276,7 +273,8 @@ async def pmpermit_cq(_, cq):
         )
 
 
-async def pmpermit_func(message, answers, victim):
+
+async def pmpermit_func(message, answers):
     loh = message._from_user.id
     gua = message._client.me.id
     siapa = message._from_user.mention
@@ -287,7 +285,7 @@ async def pmpermit_func(message, answers, victim):
     if loh != gua:
         return
     caption = f"Halo 👋 {siapa}, Saya adalah {gua2} ! Jangan spam pesan atau anda akan diblokir otomatis.\n\nAnda punya peringatan {flood[loh]}/{pm_limit} ."
-    get_pm if get_pm else caption
+    pm_text = get_pm if get_pm else caption
     buttons = InlineKeyboard(row_width=2)
     buttons.add(
         InlineKeyboardButton(
@@ -299,11 +297,11 @@ async def pmpermit_func(message, answers, victim):
         ),
         InlineKeyboardButton(text="Approve me", callback_data="pmpermit approve_me a"),
         InlineKeyboardButton(
-            text="Approve", callback_data=f"pmpermit approve {victim}"
+            text="Approve", callback_data=f"pmpermit approve {loh}"
         ),
         InlineKeyboardButton(
             text="Block & Delete",
-            callback_data=f"pmpermit block {victim}",
+            callback_data=f"pmpermit block {loh}",
         ),
     )
     answers.append(
@@ -314,7 +312,6 @@ async def pmpermit_func(message, answers, victim):
         )
     )
     return answers
-
 
 @app.on_inline_query()
 async def inline_query_handler(client, query):
@@ -331,8 +328,8 @@ async def inline_query_handler(client, query):
     except Exception as e:
         e = traceback.format_exc()
         print(e, "InLine")
-
-
+        
+        
 __MODULE__ = "antipm"
 __HELP__ = f"""
 ✘ Bantuan Untuk PM Permit
