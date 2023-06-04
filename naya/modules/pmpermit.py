@@ -153,7 +153,11 @@ async def set_limit(client, message):
 
 
 @bots.on_message(
-    filters.private & filters.incoming & ~filters.service & ~filters.me & ~filters.bot
+    filters.private
+    & filters.incoming
+    & ~filters.service
+    & ~filters.me
+    & ~filters.bot
 )
 async def pmpermit(client, message):
     org = message.from_user.id
@@ -214,8 +218,8 @@ async def pmpermit(client, message):
         result_id=x.results[0].id,
     )
 
-
 flood2 = {}
+
 
 
 async def pmpermit_cq(_, cq):
@@ -275,8 +279,6 @@ async def pmpermit_cq(_, cq):
 @app.on_inline_query(filters.regex("pmpermit"))
 async def pmpermit_func(client, query):
     gua = await bot.get_me()
-    if user_id != gua.id:
-        return
     caption = f"Hi, I'm {bots.me.first_name}, What are you here for?, You'll be blocked if you send more than 5 messages."
     buttons = InlineKeyboard(row_width=2)
     buttons.add(
@@ -303,7 +305,11 @@ async def pmpermit_func(client, query):
             input_message_content=InputTextMessageContent(caption),
         )
     )
-    await client.answer_inline_query(query.id, results=answers, cache_time=0)
+    await client.answer_inline_query(
+        query.id,
+        results=answers,
+        cache_time=0
+    )
 
 
 __MODULE__ = "antipm"
