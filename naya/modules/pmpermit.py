@@ -158,7 +158,6 @@ async def set_limit(client, message):
     & ~filters.service
     & ~filters.me
     & ~filters.bot
-    & ~filters.via_bot
 )
 async def pmpermit_func(client, message):
     org = message.from_user.id
@@ -276,7 +275,6 @@ async def pmpermit_cq(_, cq):
             user_id,
             "I'm busy right now, will approve you shortly, DO NOT SPAM.",
         )
-
 
 @app.on_callback_query(filters.regex("pmpermit"))
 async def pmpermit_func(answers, user_id, victim):
