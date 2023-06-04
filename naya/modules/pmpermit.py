@@ -212,7 +212,7 @@ async def pmpermit_func(client, message):
     if flood[str(org)] > 5:
         await message.reply_text("SPAM DETECTED, BLOCKED USER AUTOMATICALLY!")
         return await client.block_user(org)
-    results = await client.get_inline_bot_results(app.me.id, f"pmpermit {org}")
+    results = await client.get_inline_bot_results(app.me.username, f"pmpermit {org}")
     await client.send_inline_bot_result(
         org,
         results.query_id,
@@ -223,7 +223,7 @@ async def pmpermit_func(client, message):
 flood2 = {}
 
 
-@app.on_callback_query(filters.regex("pmpermit"))
+@app.on_callback_query()
 async def pmpermit_cq(_, cq):
     user_id = cq.from_user.id
     data, victim = (
@@ -277,7 +277,7 @@ async def pmpermit_cq(_, cq):
             "I'm busy right now, will approve you shortly, DO NOT SPAM.",
         )
 
-
+@app.on_callback_query(filters.regex("pmpermit"))
 async def pmpermit_func(answers, user_id, victim):
     if user_id != client.me.id:
         return
