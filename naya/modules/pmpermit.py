@@ -298,7 +298,9 @@ async def pmpermit_func(client, query):
         InlineQueryResultArticle(
             title="do_not_click_here",
             reply_markup=buttons,
-            input_message_content=InputTextMessageContent(caption.format(bots.me.first_name)),
+            input_message_content=InputTextMessageContent(
+                caption.format(bots.me.first_name)
+            ),
         )
     )
     await client.answer_inline_query(query.id, results=answers, cache_time=0)
