@@ -165,10 +165,6 @@ async def pmpermit_func(client, message):
     gua = client.me.id
     chat_id = message.chat.id
     biji = message.from_user.mention
-    victim = (
-        message.data.split(None, 2)[1],
-        message.data.split(None, 2)[2],
-    )
     botlog = await get_log_groups(gua)
     is_pm_guard_enabled = await get_var(gua, "ENABLE_PM_GUARD")
     if message.chat.id != 777000:
