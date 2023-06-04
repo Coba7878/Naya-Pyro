@@ -318,13 +318,12 @@ async def pmpermit_func(message, answers):
 async def inline_query_handler(client, inline_query):
     try:
         string = inline_query.query.lower()
+        get_id = inline_query.query.split()
         answers = []
         if string.split()[0] == "pmpermit":
-            m = [obj for obj in get_objects() if id(obj) == _id][0]
+            m = [obj for obj in get_objects() if id(obj) == get_id][0]
             answers = await pmpermit_func(m, answers)
-            await client.answer_inline_query(
-                inline_query.id, results=answers, cache_time=300
-            )
+            await client.answer_inline_query(inline_query.id, results=answers, cache_time=300)
     except Exception as e:
         e = traceback.format_exc()
         print(e, "InLine")
