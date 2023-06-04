@@ -160,7 +160,7 @@ async def set_limit(client, message):
     & ~filters.bot
     & ~filters.via_bot
 )
-async def pmpermit_func(client, message, victim):
+async def pmpermit_func(client, message, _):
     org = message.from_user.id
     gua = client.me.id
     chat_id = message.chat.id
@@ -229,7 +229,7 @@ flood2 = {}
 
 
 @app.on_callback_query()
-async def pmpermit_cq(_, cq, victim):
+async def pmpermit_cq(_, cq):
     user_id = cq.from_user.id
     data, victim = (
         cq.data.split(None, 2)[1],
@@ -282,12 +282,11 @@ async def pmpermit_cq(_, cq, victim):
             "I'm busy right now, will approve you shortly, DO NOT SPAM.",
         )
 
-
 @app.on_inline_query(filters.regex("pmpermit"))
 async def pmpermit_func(answers, user_id, victim):
     if user_id != client.me.id:
         return
-    caption = f"Hi, I'm {bot.me.first_name}, What are you here for?, You'll be blocked if you send more than 5 messages."
+    caption = f"Hi, I'm {bots.me.first_name}, What are you here for?, You'll be blocked if you send more than 5 messages."
     buttons = InlineKeyboard(row_width=2)
     buttons.add(
         InlineKeyboardButton(
