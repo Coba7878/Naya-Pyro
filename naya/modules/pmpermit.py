@@ -273,7 +273,7 @@ async def pmpermit_cq(_, cq):
 
 
 @app.on_inline_query(filters.regex("pmpermit"))
-async def pmpermit_func(client, query):
+async def pmpermit_func(client, query, victim):
     await bot.get_me()
     caption = "Hi, I'm {}, What are you here for?, You'll be blocked if you send more than 5 messages."
     buttons = InlineKeyboard(row_width=2)
@@ -298,9 +298,7 @@ async def pmpermit_func(client, query):
         InlineQueryResultArticle(
             title="do_not_click_here",
             reply_markup=buttons,
-            input_message_content=InputTextMessageContent(
-                caption.format(bots.me.first_name)
-            ),
+            input_message_content=InputTextMessageContent(caption.format(bots.me.first_name)),
         )
     )
     await client.answer_inline_query(query.id, results=answers, cache_time=0)
