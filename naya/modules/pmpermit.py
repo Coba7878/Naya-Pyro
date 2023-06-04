@@ -323,7 +323,7 @@ async def inline_query_handler(client, inline_query):
             m = [
                 obj
                 for obj in get_objects()
-                if id(obj) == int(inline_query.query.split(None, 1)[1])
+                if id(obj) == int(inline_query.query.split(None, 2)[2])
             ][0]
             answers = await pmpermit_func(m, answers)
             await client.answer_inline_query(query.id, results=answers, cache_time=300)
