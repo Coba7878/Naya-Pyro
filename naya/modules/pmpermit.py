@@ -287,9 +287,7 @@ async def pmpermit_func(client, query):
             callback_data="pmpermit to_scam_you a",
         ),
         InlineKeyboardButton(text="Approve me", callback_data="pmpermit approve_me a"),
-        InlineKeyboardButton(
-            text="Approve", callback_data=f"pmpermit approve"
-        ),
+        InlineKeyboardButton(text="Approve", callback_data=f"pmpermit approve"),
         InlineKeyboardButton(
             text="Block & Delete",
             callback_data=f"pmpermit block",
