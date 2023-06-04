@@ -5,7 +5,6 @@
 # © @KynanSupport | Nexa_UB
 # FULL MONGO NIH JING FIX MULTI CLIENT
 import traceback
-from gc import get_objects
 
 from pyrogram.raw.functions.messages import DeleteHistory
 
@@ -322,7 +321,9 @@ async def inline_query_handler(client, inline_query):
         answers = []
         if string.split()[0] == "pmpermit":
             answers = await pmpermit_func(int(get_id[0]), answers)
-            await client.answer_inline_query(inline_query.id, results=answers, cache_time=300)
+            await client.answer_inline_query(
+                inline_query.id, results=answers, cache_time=300
+            )
     except Exception as e:
         e = traceback.format_exc()
         print(e, "InLine")
