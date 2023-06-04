@@ -215,7 +215,6 @@ async def pmpermit_func(client, message):
     results = await client.get_inline_bot_results(app.me.username, f"pmpermit {org}")
     await client.send_inline_bot_result(
         org,
-        victim,
         results.query_id,
         results.results[0].id,
     )
