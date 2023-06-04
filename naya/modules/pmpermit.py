@@ -4,11 +4,9 @@
 # Kok Bacot
 # © @KynanSupport | Nexa_UB
 # FULL MONGO NIH JING FIX MULTI CLIENT
+from pyrogram.raw.functions.messages import DeleteHistory
 import traceback
 from gc import get_objects
-
-from pyrogram.raw.functions.messages import DeleteHistory
-
 from . import *
 
 PM_GUARD_WARNS_DB = {}
@@ -210,7 +208,7 @@ async def pmpermit(client, message):
     if flood[str(org)] > LIMIT:
         await message.reply_text("SPAM DETECTED, BLOCKED USER AUTOMATICALLY!")
         return await client.block_user(org)
-    x = await client.get_inline_bot_results(app.me.username, f"pmpermit {id(message)}")
+    x = await client.get_inline_bot_results(app.me.username, f"pmpermit")
     await client.send_inline_bot_result(
         org,
         query_id=x.query_id,
@@ -219,7 +217,6 @@ async def pmpermit(client, message):
 
 
 flood2 = {}
-
 
 @app.on_callback_query()
 async def pmpermit_cq(_, cq):
@@ -276,6 +273,7 @@ async def pmpermit_cq(_, cq):
         )
 
 
+
 async def pmpermit_func(message, answers):
     loh = message.from_user.id
     gua = message._client.me.id
@@ -287,7 +285,7 @@ async def pmpermit_func(message, answers):
     if loh != gua:
         return
     caption = f"Halo 👋 {siapa}, Saya adalah {gua2} ! Jangan spam pesan atau anda akan diblokir otomatis.\n\nAnda punya peringatan {flood[loh]}/{pm_limit} ."
-    get_pm if get_pm else caption
+    pm_text = get_pm if get_pm else caption
     buttons = InlineKeyboard(row_width=2)
     buttons.add(
         InlineKeyboardButton(
@@ -298,7 +296,9 @@ async def pmpermit_func(message, answers):
             callback_data="pmpermit to_scam_you a",
         ),
         InlineKeyboardButton(text="Approve me", callback_data="pmpermit approve_me a"),
-        InlineKeyboardButton(text="Approve", callback_data=f"pmpermit approve {loh}"),
+        InlineKeyboardButton(
+            text="Approve", callback_data=f"pmpermit approve {loh}"
+        ),
         InlineKeyboardButton(
             text="Block & Delete",
             callback_data=f"pmpermit block {loh}",
@@ -313,7 +313,6 @@ async def pmpermit_func(message, answers):
     )
     return answers
 
-
 @app.on_inline_query()
 async def inline_query_handler(client, query):
     try:
@@ -322,18 +321,14 @@ async def inline_query_handler(client, query):
         if text.strip() == "":
             return
         elif text.split()[0] == "pmpermit":
-            m = [
-                obj
-                for obj in get_objects()
-                if id(obj) == int(query.query.split(None, 1)[1])
-            ][0]
+            m = [obj for obj in get_objects() if id(obj) == int(query.query.split(None, 1)[1])][0]
             answers = await pmpermit_func(m, answers)
-            await client.answer_inline_query(query.id, results=answers, cache_time=0)
+            await client.answer_inline_query(query.id, results=answers, cache_time=300)
     except Exception as e:
         e = traceback.format_exc()
         print(e, "InLine")
-
-
+        
+        
 __MODULE__ = "antipm"
 __HELP__ = f"""
 ✘ Bantuan Untuk PM Permit
