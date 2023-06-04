@@ -214,6 +214,7 @@ async def pmpermit_func(client, message):
         return await client.block_user(org)
     results = await client.get_inline_bot_results(app.me.username, f"pmpermit {org}")
     await client.send_inline_bot_result(
+        cache_time=300,
         org,
         results.query_id,
         results.results[0].id,
@@ -301,7 +302,7 @@ async def pmpermit_func(answers, user_id, victim):
         ),
     )
     answers.append(
-        cache_time=300,
+        
         InlineQueryResultArticle(
             title="do_not_click_here",
             reply_markup=buttons,
