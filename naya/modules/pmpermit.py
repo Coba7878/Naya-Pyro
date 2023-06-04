@@ -5,7 +5,8 @@
 # © @KynanSupport | Nexa_UB
 # FULL MONGO NIH JING FIX MULTI CLIENT
 from pyrogram.raw.functions.messages import DeleteHistory
-
+import traceback
+from gc import get_objects
 from . import *
 
 PM_GUARD_WARNS_DB = {}
@@ -204,7 +205,7 @@ async def pmpermit(client, message):
         flood[str(org)] += 1
     else:
         flood[str(org)] = 1
-    if flood[str(org)] > 5:
+    if flood[str(org)] > LIMIT:
         await message.reply_text("SPAM DETECTED, BLOCKED USER AUTOMATICALLY!")
         return await client.block_user(org)
     x = await client.get_inline_bot_results(app.me.username, f"pmpermit {org}")
@@ -217,7 +218,7 @@ async def pmpermit(client, message):
 
 flood2 = {}
 
-
+@app.on_callback_query()
 async def pmpermit_cq(_, cq):
     user_id = cq.from_user.id
     data, victim = (
@@ -263,7 +264,7 @@ async def pmpermit_cq(_, cq):
             flood2[str(user_id)] += 1
         else:
             flood2[str(user_id)] = 1
-        if flood2[str(user_id)] > 5:
+        if flood2[str(user_id)] > LIMIT:
             await bots.send_message(user_id, "SPAM DETECTED, USER BLOCKED.")
             return await bots.block_user(user_id)
         await bots.send_message(
@@ -272,11 +273,19 @@ async def pmpermit_cq(_, cq):
         )
 
 
-@app.on_inline_query(filters.regex("pmpermit"))
-async def pmpermit_func(client, query):
-    await bot.get_me()
-    answers = []
-    caption = "Hi, What are you here for?, You'll be blocked if you send more than 5 messages."
+
+async def pmpermit_func(message, answers, victim):
+    loh = message._from_user.id
+    gua = message._client.me.id
+    siapa = message._from_user.mention
+    gua2 = message._client.me.first_name
+    get_pm = await get_var(gua, "CUSTOM_PM_TEXT")
+    get_limit = await get_var(gua, "CUSTOM_PM_WARNS_LIMIT")
+    pm_limit = get_limit if get_limit else LIMIT
+    if loh != gua:
+        return
+    caption = f"Halo 👋 {siapa}, Saya adalah {gua2} ! Jangan spam pesan atau anda akan diblokir otomatis.\n\nAnda punya peringatan {flood[loh]}/{pm_limit} ."
+    pm_text = get_pm if get_pm else caption
     buttons = InlineKeyboard(row_width=2)
     buttons.add(
         InlineKeyboardButton(
@@ -287,10 +296,12 @@ async def pmpermit_func(client, query):
             callback_data="pmpermit to_scam_you a",
         ),
         InlineKeyboardButton(text="Approve me", callback_data="pmpermit approve_me a"),
-        InlineKeyboardButton(text="Approve", callback_data=f"pmpermit approve"),
+        InlineKeyboardButton(
+            text="Approve", callback_data=f"pmpermit approve {victim}"
+        ),
         InlineKeyboardButton(
             text="Block & Delete",
-            callback_data=f"pmpermit block",
+            callback_data=f"pmpermit block {victim}",
         ),
     )
     answers.append(
@@ -300,9 +311,24 @@ async def pmpermit_func(client, query):
             input_message_content=InputTextMessageContent(caption),
         )
     )
-    await client.answer_inline_query(query.id, results=answers, cache_time=0)
+    return answers
 
-
+@app.on_inline_query()
+async def inline_query_handler(client, query):
+    try:
+        text = query.query.strip().lower()
+        answers = []
+        if text.strip() == "":
+            return
+        elif text.split()[0] == "alive":
+            m = [obj for obj in get_objects() if id(obj) == int(query.query.split(None, 1)[1])][0]
+            answers = await pmpermit_func(m, answers, victim)
+            await client.answer_inline_query(query.id, results=answers, cache_time=0)
+    except Exception as e:
+        e = traceback.format_exc()
+        print(e, "InLine")
+        
+        
 __MODULE__ = "antipm"
 __HELP__ = f"""
 ✘ Bantuan Untuk PM Permit
