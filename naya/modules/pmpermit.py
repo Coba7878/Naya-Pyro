@@ -153,11 +153,7 @@ async def set_limit(client, message):
 
 
 @bots.on_message(
-    filters.private
-    & filters.incoming
-    & ~filters.service
-    & ~filters.me
-    & ~filters.bot
+    filters.private & filters.incoming & ~filters.service & ~filters.me & ~filters.bot
 )
 async def pmpermit_func(client, message):
     org = message.from_user.id
