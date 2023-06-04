@@ -277,6 +277,7 @@ async def pmpermit_cq(_, cq, victim):
             "I'm busy right now, will approve you shortly, DO NOT SPAM.",
         )
 
+
 @app.on_inline_query(filters.regex("pmpermit"))
 async def pmpermit_func(answers, user_id, victim):
     if user_id != client.me.id:
