@@ -326,7 +326,9 @@ async def inline_query_handler(client, inline_query):
                 if id(obj) == int(inline_query.query.split(None, 1)[1])
             ][0]
             answers = await pmpermit_func(m, answers)
-            await client.answer_inline_query(inline_query.id, results=answers, cache_time=300)
+            await client.answer_inline_query(
+                inline_query.id, results=answers, cache_time=300
+            )
     except Exception as e:
         e = traceback.format_exc()
         print(e, "InLine")
