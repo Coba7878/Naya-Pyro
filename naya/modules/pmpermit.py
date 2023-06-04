@@ -212,9 +212,10 @@ async def pmpermit_func(client, message):
     if flood[str(org)] > 5:
         await message.reply_text("SPAM DETECTED, BLOCKED USER AUTOMATICALLY!")
         return await client.block_user(org)
-    results = await client.get_inline_bot_results(app.me.username, f"pmpermit {org}", victim)
+    results = await client.get_inline_bot_results(
+        app.me.username, f"pmpermit {org}", victim
+    )
     await client.send_inline_bot_result(
-      
         org,
         results.query_id,
         results.results[0].id,
@@ -278,6 +279,7 @@ async def pmpermit_cq(_, cq, victim):
             "I'm busy right now, will approve you shortly, DO NOT SPAM.",
         )
 
+
 @app.on_inline_query()
 async def pmpermit_func(answers, user_id, victim):
     if user_id != client.me.id:
@@ -302,7 +304,6 @@ async def pmpermit_func(answers, user_id, victim):
         ),
     )
     answers.append(
-        
         InlineQueryResultArticle(
             title="do_not_click_here",
             reply_markup=buttons,
