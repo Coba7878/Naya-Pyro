@@ -56,10 +56,7 @@ async def main():
 if __name__ == "__main__":
     install()
     try:
-        event_policy = asyncio.get_event_loop_policy()
-        event_loop = event_policy.get_event_loop()
-        asyncio.set_event_loop(event_loop)
-        event_loop.run_until_complete(main())
+        loop.run_until_complete(main())
     except KeyboardInterrupt:
         pass
     finally:
