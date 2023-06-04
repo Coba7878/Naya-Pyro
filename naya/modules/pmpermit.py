@@ -160,7 +160,7 @@ async def set_limit(client, message):
     & ~filters.bot
     & ~filters.via_bot
 )
-async def pmpermit_func(_, client, message):
+async def pmpermit_func(client, message):
     org = message.from_user.id
     gua = client.me.id
     chat_id = message.chat.id
@@ -228,7 +228,7 @@ async def pmpermit_func(_, client, message):
 flood2 = {}
 
 
-@app.on_callback_query()
+@app.on_callback_query(filters.regex("pmpermit"))
 async def pmpermit_cq(_, cq):
     user_id = cq.from_user.id
     data, victim = (
@@ -283,7 +283,6 @@ async def pmpermit_cq(_, cq):
         )
 
 
-@app.on_inline_query(filters.regex("pmpermit"))
 async def pmpermit_func(answers, user_id, victim):
     if user_id != client.me.id:
         return
