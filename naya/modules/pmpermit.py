@@ -153,7 +153,11 @@ async def set_limit(client, message):
 
 
 @bots.on_message(
-    filters.private & filters.incoming & ~filters.service & ~filters.me & ~filters.bot
+    filters.private
+    & filters.incoming
+    & ~filters.service
+    & ~filters.me
+    & ~filters.bot
 )
 async def pmpermit(client, message):
     org = message.from_user.id
@@ -219,6 +223,7 @@ async def pmpermit(client, message):
 flood2 = {}
 
 
+
 async def pmpermit_cq(_, cq):
     user_id = cq.from_user.id
     data, victim = (
@@ -274,7 +279,7 @@ async def pmpermit_cq(_, cq):
 
 
 @app.on_inline_query(filters.regex("pmpermit"))
-async def pmpermit_func(answers, user_id, victim):
+async def pmpermit_func(answers, user_id):
     if user_id != client.me.id:
         return
     caption = f"Hi, I'm {bots.me.first_name}, What are you here for?, You'll be blocked if you send more than 5 messages."
