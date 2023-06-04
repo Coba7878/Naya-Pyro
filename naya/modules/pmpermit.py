@@ -153,7 +153,11 @@ async def set_limit(client, message):
 
 
 @bots.on_message(
-    filters.private & filters.incoming & ~filters.service & ~filters.me & ~filters.bot
+    filters.private
+    & filters.incoming
+    & ~filters.service
+    & ~filters.me
+    & ~filters.bot
 )
 async def pmpermit(client, message):
     org = message.from_user.id
@@ -207,15 +211,15 @@ async def pmpermit(client, message):
     if flood[str(org)] > 5:
         await message.reply_text("SPAM DETECTED, BLOCKED USER AUTOMATICALLY!")
         return await client.block_user(org)
-    x = await client.get_inline_bot_results(app.me.username, "pmpermit")
+    x = await client.get_inline_bot_results(app.me.username, f"pmpermit {org}")
     await client.send_inline_bot_result(
         org,
         query_id=x.query_id,
         result_id=x.results[0].id,
     )
 
-
 flood2 = {}
+
 
 
 async def pmpermit_cq(_, cq):
@@ -303,7 +307,11 @@ async def pmpermit_func(answers, user_id):
             input_message_content=InputTextMessageContent(caption),
         )
     )
-    return answers
+    await client.answer_inline_query(
+        query.id,
+        results=answers,
+        cache_time=0
+    )
 
 
 __MODULE__ = "antipm"
