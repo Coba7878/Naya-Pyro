@@ -367,7 +367,7 @@ async def _(_, message):
     _ubot = [bot.me.id for bot in botlist]
     if user_id not in _ubot and user_id not in DEVS:
         return await message.reply_photo(
-            photo=photo,
+            photo= "https://telegra.ph//file/eddaa2b8a9471e132bf3a.jpg",
             caption=f"""
 <b>👋 Halo Jeng <a href=tg://openmessage?user_id={message.from_user.id}>{message.from_user.first_name} {message.from_user.last_name or ''}</a> !
 💭 Apa ada yang bisa gue banting ?
@@ -377,7 +377,7 @@ async def _(_, message):
                 [
                     [
                         InlineKeyboardButton(text="👮‍♂ Owner", user_id=OWNER),
-                        InlineKeyboardButton(text="Info", callback_data="inpo"),
+                        InlineKeyboardButton(text="Instagram", url="instagram.com/muklaskhoiruu_"),
                     ],
                     [InlineKeyboardButton("Tutup", callback_data="cl_ad")],
                 ]
